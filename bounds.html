@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Fit to the bounds of a LineString</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <style>
+    .btn-control {
+      font: bold 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      background-color: #3386c0;
+      color: #fff;
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      z-index: 1;
+      border: none;
+      width: 200px;
+      margin-left: -100px;
+      display: block;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 3px;
+    }
+
+    .btn-control:hover {
+      background-color: #4ea0da;
+    }
+  </style>
+  <div id="map"></div>
+  <button id="zoomto" class="btn-control">Zoom to bounds</button>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZmFzaGlvbmRldjEiLCJhIjoiY2tscjlmM3diMTNkaTJvbnc1OXBpbzVwNiJ9.yJIaRGA7FoRXjQCSPj3WEA';
+    // A GeoJSON object with a LineString route from the White House to Capitol Hill
+    var geojson = {
+      'type': 'FeatureCollection',
+      'features': [
+        {
+          'type': 'Feature',
+          'geometry': {
+            'type': 'LineString',
+            'properties': {},
+            'coordinates': [
+              [-1.15243,52.31447],
+[-1.14116,52.327],
+[-1.1807,52.35491],
+[-1.17283,52.37603],
+[-1.1476,52.37817],
+[-1.15333,52.39768],
+[-1.1077,52.40895],
+[-1.09804,52.42756],
+[-1.04722,52.42774],
+[-1.02682,52.44384],
+[-1.00607,52.41897],
+[-0.95113,52.40305],
+[-0.93181,52.41897],
+[-0.89352,52.41736],
+[-0.85505,52.4374],
+[-0.8402,52.46728],
+[-0.78258,52.47856],
+[-0.75538,52.47086],
+[-0.75216,52.47927],
+[-0.7357,52.50718],
+[-0.69759,52.5274],
+[-0.70242,52.5419],
+[-0.66896,52.55263],
+[-0.64355,52.57983],
+[-0.5947,52.57088],
+[-0.57037,52.58341],
+[-0.52975,52.58073],
+[-0.58343,52.55496],
+[-0.52492,52.53206],
+[-0.56053,52.51148],
+[-0.60043,52.4884],
+[-0.5786,52.48374],
+[-0.57341,52.45028],
+[-0.54836,52.43525],
+[-0.41255,52.41539],
+[-0.49575,52.36529],
+[-0.47177,52.35008],
+[-0.45764,52.31787],
+[-0.51758,52.31555],
+[-0.53351,52.29479],
+[-0.5217,52.27618],
+[-0.59166,52.2463],
+[-0.59076,52.23503],
+[-0.64087,52.22197],
+[-0.66556,52.19262],
+[-0.69401,52.19602],
+[-0.73731,52.18081],
+[-0.74465,52.1656],
+[-0.76845,52.16524],
+[-0.82284,52.1631],
+[-0.81819,52.14162],
+[-0.87867,52.11765],
+[-0.86292,52.09618],
+[-0.88064,52.08168],
+[-0.87151,52.07345],
+[-0.88994,52.06952],
+[-0.87777,52.05932],
+[-0.92805,52.07041],
+[-0.9642,52.08329],
+[-1.00446,52.05967],
+[-1.03881,52.06737],
+[-1.05688,52.05878],
+[-1.06458,52.03605],
+[-1.08802,52.0323],
+[-1.07245,52.00599],
+[-1.09625,52.00152],
+[-1.10645,51.97808],
+[-1.15619,51.96949],
+[-1.22007,51.98739],
+[-1.22991,51.99848],
+[-1.20844,52.00492],
+[-1.26409,52.0561],
+[-1.16657,52.07292],
+[-1.16084,52.11085],
+[-1.16281,52.12141],
+[-1.22526,52.1266],
+[-1.23564,52.15773],
+[-1.30363,52.13518],
+[-1.31025,52.14037],
+[-1.29325,52.15129],
+[-1.31544,52.15147],
+[-1.32564,52.16954],
+[-1.33065,52.18385],
+[-1.28305,52.19244],
+[-1.26283,52.21445],
+[-1.26677,52.23378],
+[-1.29361,52.23628],
+[-1.31455,52.26616],
+[-1.30739,52.276],
+[-1.2827,52.27207],
+[-1.24584,52.2497],
+[-1.2181,52.27403],
+[-1.2351,52.29157],
+[-1.22168,52.30893],
+[-1.18196,52.3109],
+[-1.17247,52.30087],
+[-1.15243,52.31447]
+            ]
+          }
+        }
+      ]
+    };
+
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v10',
+      center: [-77.0214, 38.897],
+      zoom: 12
+    });
+
+    map.on('load', function () {
+      map.addSource('LineString', {
+        'type': 'geojson',
+        'data': geojson
+      });
+      map.addLayer({
+        'id': 'LineString',
+        'type': 'line',
+        'source': 'LineString',
+        'layout': {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-color': '#BF93E4',
+          'line-width': 5
+        }
+      });
+
+      document
+        .getElementById('zoomto')
+        .addEventListener('click', function () {
+          // Geographic coordinates of the LineString
+          var coordinates = geojson.features[0].geometry.coordinates;
+
+          // Pass the first coordinates in the LineString to `lngLatBounds` &
+          // wrap each coordinate pair in `extend` to include them in the bounds
+          // result. A variation of this technique could be applied to zooming
+          // to the bounds of multiple Points or Polygon geomteries - it just
+          // requires wrapping all the coordinates with the extend method.
+          var bounds = coordinates.reduce(function (bounds, coord) {
+            return bounds.extend(coord);
+          }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+          console.log('bounds', bounds);
+          map.fitBounds(bounds, {
+            padding: 20
+          });
+        });
+    });
+  </script>
+
+</body>
+
+</html>
